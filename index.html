@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Playground</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        
+        section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        h1, h2 {
+            color: #2c3e50;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .hover-box {
+            width: 200px;
+            height: 200px;
+            background-color: #e74c3c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .hover-box:hover {
+            background-color: #c0392b;
+            transform: scale(1.05);
+        }
+        
+        .keypress-box {
+            padding: 20px;
+            border: 2px dashed #3498db;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+            min-height: 50px;
+        }
+        
+        .secret-box {
+            width: 100%;
+            height: 100px;
+            background-color: #f1c40f;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .gallery {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+        
+        .gallery-item {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            flex-shrink: 0;
+        }
+        
+        .gallery img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .gallery img:hover {
+            transform: scale(1.05);
+        }
+        
+        .image-title {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px;
+            border-radius: 0 0 8px 8px;
+            transform: translateY(100%);
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .gallery-item:hover .image-title {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .gallery-item:hover .remove-btn {
+            opacity: 1;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: -1px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: #ecf0f1;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            margin-right: 5px;
+        }
+        
+        .tab.active {
+            background: white;
+            border-bottom: 1px solid white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 0 0 8px 8px;
+            background: white;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        form {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .success {
+            color: #2ecc71;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        input.valid {
+            border-color: #2ecc71;
+        }
+        
+        input.invalid {
+            border-color: #e74c3c;
+        }
+        
+        .hidden-message {
+            display: none;
+            background-color: #9b59b6;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .slide {
+            animation: slideIn 0.5s forwards;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(-100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .add-image-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+            align-items: center;
+        }
+        
+        .add-image-form input {
+            flex: 1;
+            min-width: 200px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .add-image-form button {
+            padding: 8px 15px;
+        }
+        
+        .file-input-container {
+            position: relative;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .file-input-label {
+            display: block;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .file-input {
+            position: absolute;
+            width: 0.1px;
+            height: 0.1px;
+            opacity: 0;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        .preview-container {
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .preview-image {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 4px;
+        }
+        
+        .image-source-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .image-source-selector button {
+            flex: 1;
+        }
+        
+        .source-active {
+            background-color: #2ecc71;
+        }
+        
+        .context-menu {
+            position: absolute;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .context-menu button {
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            text-align: left;
+            background: none;
+            border: none;
+            color: #333;
+        }
+        
+        .context-menu button:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <h1>JavaScript Playground</h1>
+    
+    <!-- Event Handling Section -->
+    <section id="event-handling">
+        <h2>1. Event Handling 🎈</h2>
+        
+        <h3>Button Click</h3>
+        <button id="click-button">Click Me!</button>
+        <p id="click-message"></p>
+        
+        <h3>Hover Effects</h3>
+        <div class="hover-box">Hover Over Me!</div>
+        
+        <h3>Keypress Detection</h3>
+        <p>Press any key on your keyboard</p>
+        <div class="keypress-box" id="keypress-box">
+            Keypresses will appear here
+        </div>
+        
+        <h3>Secret Action 🤫</h3>
+        <div class="secret-box" id="secret-box">
+            Double-click or long press me!
+        </div>
+        <div class="hidden-message" id="hidden-message">
+            🎉 You found the secret! 🎉
+        </div>
+    </section>
+    
+    <!-- Interactive Elements Section -->
+    <section id="interactive-elements">
+        <h2>2. Interactive Elements 🎮</h2>
+        
+        <h3>Color Changing Button</h3>
+        <button id="color-changer">Click to Change My Color</button>
+        
+        <h3>Image Gallery</h3>
+        <div class="image-source-selector">
+            <button id="use-upload" class="source-active">Upload Image</button>
+            <button id="use-random">Get Random Animal</button>
+        </div>
+        
+        <div class="gallery" id="gallery">
+            <div class="gallery-item">
+                <img src="https://bestanimations.com/Nature/nature-waterfall-animated-gif-4.gif" alt="Nature">
+                <div class="image-title">Nature</div>
+                <button class="remove-btn">×</button>
+            </div>
+            <div class="gallery-item">
+                <img src="https://th.bing.com/th/id/OIP.wA38FQ4Ky-rzVt4B2uE6CQHaE1?rs=1&pid=ImgDetMain" alt="City">
+                <div class="image-title">City</div>
+                <button class="remove-btn">×</button>
+            </div>
+            <div class="gallery-item">
+                <img src="https://th.bing.com/th/id/OIP.JMaUtq0k8X0AKg7wnVsVigAAAA?rs=1&pid=ImgDetMain" alt="Animal">
+                <div class="image-title">Animal</div>
+                <button class="remove-btn">×</button>
+            </div>
+        </div>
+        
+        <div class="add-image-form" id="upload-form">
+            <input type="text" id="new-image-name" placeholder="Image name">
+            <div class="file-input-container">
+                <label class="file-input-label" id="file-input-label">Choose Image</label>
+                <input type="file" id="image-upload" class="file-input" accept="image/*">
+            </div>
+            <button id="add-image">Add Image</button>
+        </div>
+        
+        <div class="add-image-form" id="random-form" style="display: none;">
+            <input type="text" id="random-image-name" placeholder="Animal name (e.g. dog, cat)">
+            <button id="add-random">Get Animal Image</button>
+        </div>
+        
+        <div class="preview-container" id="preview-container">
+            <h4>Image Preview:</h4>
+            <img id="preview-image" class="preview-image">
+        </div>
+        
+        <h3>Tabs</h3>
+        <div class="tabs">
+            <div class="tab active" data-tab="tab1">Tab 1</div>
+            <div class="tab" data-tab="tab2">Tab 2</div>
+            <div class="tab" data-tab="tab3">Tab 3</div>
+        </div>
+        
+        <div class="tab-content active" id="tab1">
+            <h4>Content for Tab 1</h4>
+            <p>This is the content for the first tab. Tabs are a great way to organize information!</p>
+        </div>
+        
+        <div class="tab-content" id="tab2">
+            <h4>Content for Tab 2</h4>
+            <p>Here's some different content for the second tab. Notice how we can switch between them?</p>
+        </div>
+        
+        <div class="tab-content" id="tab3">
+            <h4>Content for Tab 3</h4>
+            <p>Third tab content here. This one has an animated list!</p>
+            <ul id="animated-list">
+                <li>Item 1</li>
+                <li>Item 2</li>
+                <li>Item 3</li>
+            </ul>
+            <button id="add-item">Add Item</button>
+        </div>
+    </section>
+    
+    <!-- Form Validation Section -->
+    <section id="form-validation">
+        <h2>3. Form Validation 📋✅</h2>
+        
+        <form id="validation-form">
+            <div class="form-group">
+                <label for="name">Name (required)</label>
+                <input type="text" id="name" placeholder="Enter your name">
+                <div class="error" id="name-error">Name is required</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email (must be valid)</label>
+                <input type="email" id="email" placeholder="Enter your email">
+                <div class="error" id="email-error">Please enter a valid email</div>
+                <div class="success" id="email-success">Email looks good!</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password (min 8 characters)</label>
+                <input type="password" id="password" placeholder="Enter your password">
+                <div class="error" id="password-error">Password must be at least 8 characters</div>
+                <div class="success" id="password-success">Password is strong!</div>
+            </div>
+            
+            <button type="submit">Submit Form</button>
+        </form>
+    </section>
+    
+    <!-- Context Menu (hidden by default) -->
+    <div class="context-menu" id="context-menu">
+        <button id="search-online">Search this animal online</button>
+        <button id="change-image">Change this image</button>
+    </div>
+    
+    <script>
+        // 1. Event Handling
+        
+        // Button click
+        document.getElementById('click-button').addEventListener('click', function() {
+            const clickMessage = document.getElementById('click-message');
+            clickMessage.textContent = 'Button was clicked! 🎉';
+            clickMessage.classList.add('slide');
+            
+            setTimeout(() => {
+                clickMessage.classList.remove('slide');
+            }, 500);
+        });
+        
+        // Keypress detection
+        document.addEventListener('keydown', function(event) {
+            document.getElementById('keypress-box').textContent = 
+                `You pressed: ${event.key} (Key code: ${event.keyCode})`;
+        });
+        
+        // Secret action (double click or long press)
+        const secretBox = document.getElementById('secret-box');
+        const hiddenMessage = document.getElementById('hidden-message');
+        let pressTimer;
+        
+        secretBox.addEventListener('dblclick', showSecretMessage);
+        
+        secretBox.addEventListener('mousedown', function() {
+            pressTimer = setTimeout(showSecretMessage, 1000);
+        });
+        
+        secretBox.addEventListener('mouseup', clearPressTimer);
+        secretBox.addEventListener('mouseleave', clearPressTimer);
+        
+        function showSecretMessage() {
+            hiddenMessage.style.display = 'block';
+            setTimeout(() => {
+                hiddenMessage.style.display = 'none';
+            }, 3000);
+        }
+        
+        function clearPressTimer() {
+            if (pressTimer) {
+                clearTimeout(pressTimer);
+            }
+        }
+        
+        // 2. Interactive Elements
+        
+        // Color changing button
+        const colors = ['#3498db', '#2ecc71', '#e74c3c', '#f1c40f', '#9b59b6'];
+        let colorIndex = 0;
+        
+        document.getElementById('color-changer').addEventListener('click', function() {
+            colorIndex = (colorIndex + 1) % colors.length;
+            this.style.backgroundColor = colors[colorIndex];
+            this.textContent = `Color changed to ${colors[colorIndex]}`;
+        });
+        
+        // Image Gallery Functionality
+        const gallery = document.getElementById('gallery');
+        const uploadForm = document.getElementById('upload-form');
+        const randomForm = document.getElementById('random-form');
+        const contextMenu = document.getElementById('context-menu');
+        let selectedAnimal = null;
+        
+        // Switch between upload and random image sources
+        document.getElementById('use-upload').addEventListener('click', function() {
+            uploadForm.style.display = 'flex';
+            randomForm.style.display = 'none';
+            this.classList.add('source-active');
+            document.getElementById('use-random').classList.remove('source-active');
+        });
+        
+        document.getElementById('use-random').addEventListener('click', function() {
+            uploadForm.style.display = 'none';
+            randomForm.style.display = 'flex';
+            this.classList.add('source-active');
+            document.getElementById('use-upload').classList.remove('source-active');
+        });
+        
+        // Handle file selection for uploads
+        document.getElementById('image-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('file-input-label').textContent = file.name;
+                
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('preview-image').src = event.target.result;
+                    document.getElementById('preview-container').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Remove image functionality
+        gallery.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-btn')) {
+                e.target.closest('.gallery-item').remove();
+                hideContextMenu();
+            }
+        });
+        
+        // Add uploaded image
+        document.getElementById('add-image').addEventListener('click', function() {
+            const imageName = document.getElementById('new-image-name').value.trim();
+            const fileInput = document.getElementById('image-upload');
+            
+            if (!imageName) {
+                alert('Please enter an image name');
+                return;
+            }
+            
+            if (!fileInput.files[0]) {
+                alert('Please select an image file');
+                return;
+            }
+            
+            addImageToGallery(imageName, fileInput.files[0]);
+            
+            // Reset form
+            document.getElementById('new-image-name').value = '';
+            document.getElementById('file-input-label').textContent = 'Choose Image';
+            document.getElementById('preview-container').style.display = 'none';
+            fileInput.value = '';
+        });
+        
+        // Add random animal image
+        document.getElementById('add-random').addEventListener('click', function() {
+            const animalName = document.getElementById('random-image-name').value.trim();
+            
+            if (!animalName) {
+                alert('Please enter an animal name');
+                return;
+            }
+            
+            addImageToGallery(animalName, {
+                url: `https://source.unsplash.com/random/300x200?${encodeURIComponent(animalName)}`,
+                isAnimal: true,
+                searchTerm: animalName
+            });
+            
+            document.getElementById('random-image-name').value = '';
+        });
+        
+        function addImageToGallery(name, file) {
+            const galleryItem = document.createElement('div');
+            galleryItem.className = 'gallery-item';
+            
+            const img = document.createElement('img');
+            img.alt = name;
+            
+            // Store metadata for context menu
+            if (file.isAnimal) {
+                galleryItem.dataset.isAnimal = "true";
+                galleryItem.dataset.searchTerm = file.searchTerm || name;
+            }
+            
+            if (file.url) {
+                // For random animal images
+                img.src = file.url;
+                createGalleryItem(galleryItem, img, name, file);
+            } else {
+                // For uploaded images
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    img.src = event.target.result;
+                    createGalleryItem(galleryItem, img, name, file);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function createGalleryItem(container, img, name, file) {
+            const title = document.createElement('div');
+            title.className = 'image-title';
+            title.textContent = name;
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-btn';
+            removeBtn.textContent = '×';
+            
+            container.appendChild(img);
+            container.appendChild(title);
+            container.appendChild(removeBtn);
+            
+            container.style.opacity = '0';
+            gallery.appendChild(container);
+            
+            setTimeout(() => {
+                container.style.transition = 'opacity 0.5s';
+                container.style.opacity = '1';
+            }, 10);
+            
+            // Add right-click context menu
+            container.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                if (this.dataset.isAnimal === "true") {
+                    selectedAnimal = this;
+                    showContextMenu(e.clientX, e.clientY);
+                }
+            });
+        }
+        
+        // Context Menu Functions
+        function showContextMenu(x, y) {
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = `${x}px`;
+            contextMenu.style.top = `${y}px`;
+        }
+        
+        function hideContextMenu() {
+            contextMenu.style.display = 'none';
+        }
+        
+        // Close context menu when clicking elsewhere
+        document.addEventListener('click', hideContextMenu);
+        
+        // Context menu actions
+        document.getElementById('search-online').addEventListener('click', function() {
+            if (selectedAnimal) {
+                const searchTerm = selectedAnimal.dataset.searchTerm;
+                window.open(`https://www.google.com/search?q=${encodeURIComponent(searchTerm)}&tbm=isch`, '_blank');
+            }
+            hideContextMenu();
+        });
+        
+        document.getElementById('change-image').addEventListener('click', function() {
+            if (selectedAnimal) {
+                const searchTerm = selectedAnimal.dataset.searchTerm;
+                const img = selectedAnimal.querySelector('img');
+                img.src = `https://source.unsplash.com/random/300x200?${encodeURIComponent(searchTerm)}&${Date.now()}`;
+            }
+            hideContextMenu();
+        });
+        
+        // Tabs functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs and contents
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding content
+                this.classList.add('active');
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Animated list in tab 3
+        let itemCount = 3;
+        document.getElementById('add-item').addEventListener('click', function() {
+            itemCount++;
+            const newItem = document.createElement('li');
+            newItem.textContent = `Item ${itemCount}`;
+            newItem.classList.add('slide');
+            document.getElementById('animated-list').appendChild(newItem);
+            
+            setTimeout(() => {
+                newItem.classList.remove('slide');
+            }, 500);
+        });
+        
+        // 3. Form Validation
+        const form = document.getElementById('validation-form');
+        
+        // Real-time validation
+        document.getElementById('name').addEventListener('input', validateName);
+        document.getElementById('email').addEventListener('input', validateEmail);
+        document.getElementById('password').addEventListener('input', validatePassword);
+        
+        // Form submission
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const isNameValid = validateName();
+            const isEmailValid = validateEmail();
+            const isPasswordValid = validatePassword();
+            
+            if (isNameValid && isEmailValid && isPasswordValid) {
+                alert('Form submitted successfully!');
+                form.reset();
+                
+                // Reset validation states
+                document.querySelectorAll('.error, .success').forEach(el => {
+                    el.style.display = 'none';
+                });
+                
+                document.querySelectorAll('input').forEach(input => {
+                    input.classList.remove('valid', 'invalid');
+                });
+            } else {
+                alert('Please fix the errors before submitting.');
+            }
+        });
+        
+        function validateName() {
+            const nameInput = document.getElementById('name');
+            const nameError = document.getElementById('name-error');
+            const isValid = nameInput.value.trim() !== '';
+            
+            nameError.style.display = isValid ? 'none' : 'block';
+            nameInput.classList.toggle('valid', isValid);
+            nameInput.classList.toggle('invalid', !isValid);
+            
+            return isValid;
+        }
+        
+        function validateEmail() {
+            const emailInput = document.getElementById('email');
+            const emailError = document.getElementById('email-error');
+            const emailSuccess = document.getElementById('email-success');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const isValid = emailRegex.test(emailInput.value);
+            
+            emailError.style.display = isValid ? 'none' : 'block';
+            emailSuccess.style.display = isValid ? 'block' : 'none';
+            emailInput.classList.toggle('valid', isValid);
+            emailInput.classList.toggle('invalid', !isValid);
+            
+            return isValid;
+        }
+        
+        function validatePassword() {
+            const passwordInput = document.getElementById('password');
+            const passwordError = document.getElementById('password-error');
+            const passwordSuccess = document.getElementById('password-success');
+            const isValid = passwordInput.value.length >= 8;
+            
+            passwordError.style.display = isValid ? 'none' : 'block';
+            passwordSuccess.style.display = isValid ? 'block' : 'none';
+            passwordInput.classList.toggle('valid', isValid);
+            passwordInput.classList.toggle('invalid', !isValid);
+            
+            return isValid;
+        }
+    </script>
+</body>
+</html>
